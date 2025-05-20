@@ -36,39 +36,26 @@ public class QrCodeService {
     
     private final ObjectMapper objectMapper = new ObjectMapper();
     
-    /**
-     * Generates QR codes for each page of a PDF document
-     * 
-     * @param pdfFile The PDF file
-     * @return The modified PDF with QR codes embedded
-     */
+
     public byte[] generateQrCodesForPdf(MultipartFile pdfFile) {
         try {
-            // Store the file temporarily
             String tempFilePath = fileStorageService.storeFileTemporary(pdfFile);
             byte[] pdfBytes = Files.readAllBytes(Paths.get(tempFilePath));
             
-            // Load the PDF document
             try (ByteArrayInputStream bais = new ByteArrayInputStream(pdfBytes)) {
-                // Count the number of pages
                 int numberOfPages = countPages(pdfBytes);
                 
-                // Generate QR codes for each page
                 byte[][] qrCodes = new byte[numberOfPages][];
                 for (int i = 0; i < numberOfPages; i++) {
-                    // Create page info JSON
                     Map<String, Object> pageInfo = new HashMap<>();
                     pageInfo.put("pageIndex", i);
                     String pageInfoJson = objectMapper.writeValueAsString(pageInfo);
                     
-                    // Generate QR code
                     qrCodes[i] = qrCodeUtil.generateQrCode(pageInfoJson);
                 }
                 
-                // Embed QR codes into the PDF
                 byte[] modifiedPdf = pdfUtil.embedQrCodesIntoPdf(new ByteArrayInputStream(pdfBytes), qrCodes);
                 
-                // Clean up temporary file
                 fileStorageService.deleteFile(tempFilePath);
                 
                 return modifiedPdf;
@@ -78,50 +65,34 @@ public class QrCodeService {
         }
     }
     
-    /**
-     * Processes a PDF document with QR codes and extracts pages into separate directories
-     * 
-     * @param pdfFile The PDF file with QR codes
-     * @return List of page information objects
-     */
+
     public List<PageInfo> processPdfWithQrCodes(MultipartFile pdfFile) {
         try {
-            // Store the file temporarily
             String tempFilePath = fileStorageService.storeFileTemporary(pdfFile);
             byte[] pdfBytes = Files.readAllBytes(Paths.get(tempFilePath));
             
-            // Extract QR codes from the PDF
             List<BufferedImage> qrCodeImages = pdfUtil.extractQrCodesFromPdf(pdfBytes);
             List<PageInfo> pageInfoList = new ArrayList<>();
             
-            // Create a session directory for this upload
             String sessionDir = fileStorageService.createSessionDirectory();
             
-            // Process each QR code
             for (int i = 0; i < qrCodeImages.size(); i++) {
                 try {
-                    // Read the QR code content
                     String qrCodeContent = qrCodeUtil.readQrCode(qrCodeImages.get(i));
                     
-                    // Parse the page info from the QR code
                     Map<String, Object> pageInfoMap = objectMapper.readValue(qrCodeContent, Map.class);
                     int pageIndex = (int) pageInfoMap.get("pageIndex");
                     
-                    // Create directory for this page index
                     String pageDir = Paths.get(sessionDir, "page_" + pageIndex).toString();
                     Files.createDirectories(Paths.get(pageDir));
                     
-                    // Extract the page from the PDF
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     pdfUtil.extractPageFromPdf(pdfBytes, i, baos);
                     
-                    // Save the page to the appropriate directory
                     String pagePath = fileStorageService.savePage(baos.toByteArray(), pageDir, pageIndex);
                     
-                    // Add page info to the list
                     pageInfoList.add(new PageInfo(pageIndex, pagePath));
                 } catch (QrCodeException e) {
-                    // If QR code can't be read, use the current index as fallback
                     String pageDir = Paths.get(sessionDir, "page_unknown_" + i).toString();
                     Files.createDirectories(Paths.get(pageDir));
                     
@@ -133,7 +104,6 @@ public class QrCodeService {
                 }
             }
             
-            // Clean up temporary file
             fileStorageService.deleteFile(tempFilePath);
             
             return pageInfoList;
@@ -142,16 +112,10 @@ public class QrCodeService {
         }
     }
     
-    /**
-     * Counts the number of pages in a PDF document
-     * 
-     * @param pdfBytes The PDF document as a byte array
-     * @return The number of pages
-     */
+
     private int countPages(byte[] pdfBytes) {
         try {
-            // Use PDFBox to count pages
-            try (org.apache.pdfbox.pdmodel.PDDocument document = 
+            try (org.apache.pdfbox.pdmodel.PDDocument document =
                     org.apache.pdfbox.pdmodel.PDDocument.load(new ByteArrayInputStream(pdfBytes))) {
                 return document.getNumberOfPages();
             }

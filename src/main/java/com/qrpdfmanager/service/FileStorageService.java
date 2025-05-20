@@ -37,12 +37,6 @@ public class FileStorageService {
         }
     }
 
-    /**
-     * Stores a file in the temporary directory
-     * 
-     * @param file The file to store
-     * @return The path to the stored file
-     */
     public String storeFileTemporary(MultipartFile file) {
         // Normalize file name
         String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -70,12 +64,7 @@ public class FileStorageService {
         }
     }
 
-    /**
-     * Creates a directory for storing extracted pages
-     * 
-     * @param pageIndex The page index to use as directory name
-     * @return The path to the created directory
-     */
+
     public String createPageDirectory(int pageIndex) {
         String sessionId = UUID.randomUUID().toString();
         Path pageDir = this.fileStorageLocation.resolve("page_" + pageIndex);
@@ -88,14 +77,7 @@ public class FileStorageService {
         }
     }
 
-    /**
-     * Saves a page to the specified directory
-     * 
-     * @param pageBytes The page content as a byte array
-     * @param directory The directory to save the page to
-     * @param pageIndex The page index
-     * @return The path to the saved page
-     */
+
     public String savePage(byte[] pageBytes, String directory, int pageIndex) {
         try {
             String fileName = "page_" + pageIndex + ".pdf";
@@ -107,12 +89,7 @@ public class FileStorageService {
         }
     }
 
-    /**
-     * Gets the file extension from a filename
-     * 
-     * @param fileName The filename
-     * @return The file extension including the dot
-     */
+
     private String getFileExtension(String fileName) {
         if (fileName == null) {
             return "";
@@ -121,11 +98,6 @@ public class FileStorageService {
         return (dotIndex == -1) ? "" : fileName.substring(dotIndex);
     }
     
-    /**
-     * Creates a unique session directory for the current upload
-     * 
-     * @return The path to the created session directory
-     */
     public String createSessionDirectory() {
         String sessionId = UUID.randomUUID().toString();
         Path sessionDir = this.fileStorageLocation.resolve(sessionId);
@@ -138,11 +110,6 @@ public class FileStorageService {
         }
     }
     
-    /**
-     * Deletes a file
-     * 
-     * @param filePath The path to the file to delete
-     */
     public void deleteFile(String filePath) {
         try {
             Files.deleteIfExists(Paths.get(filePath));

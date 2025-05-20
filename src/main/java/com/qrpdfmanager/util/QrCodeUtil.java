@@ -42,12 +42,6 @@ public class QrCodeUtil {
     // Added white border size (in pixels)
     private static final int WHITE_BORDER = 20;
 
-    /**
-     * Generate QR code image from content with increased size and white border
-     * 
-     * @param content The content to encode in the QR code
-     * @return byte array of the QR code image
-     */
     public byte[] generateQrCode(String content) {
         try {
             Map<EncodeHintType, Object> hints = new HashMap<>();
@@ -78,13 +72,6 @@ public class QrCodeUtil {
         }
     }
     
-    /**
-     * Add white border around QR code image
-     * 
-     * @param original The original QR code image
-     * @param borderSize The size of the border in pixels
-     * @return The QR code image with white border
-     */
     private BufferedImage addWhiteBorder(BufferedImage original, int borderSize) {
         int width = original.getWidth();
         int height = original.getHeight();
@@ -107,12 +94,6 @@ public class QrCodeUtil {
         return bordered;
     }
     
-    /**
-     * Read QR code content from image with enhanced robustness
-     * 
-     * @param image The image containing the QR code
-     * @return The content encoded in the QR code
-     */
     public String readQrCode(BufferedImage image) {
         // Create a list to store all exceptions for better error reporting
         List<Exception> exceptions = new ArrayList<>();
@@ -183,12 +164,6 @@ public class QrCodeUtil {
         throw new QrCodeException(errorMessage.toString());
     }
     
-    /**
-     * Attempt to decode a QR code from an image using multiple strategies
-     * 
-     * @param image The image to decode
-     * @return The decoded text or null if decoding failed
-     */
     private String decodeQRCode(BufferedImage image) {
         // Try with HybridBinarizer first (better for high contrast images)
         try {
@@ -232,14 +207,7 @@ public class QrCodeUtil {
         return null; // All attempts failed
     }
     
-    /**
-     * Decode QR code using HybridBinarizer
-     * 
-     * @param image The source image
-     * @param binarizer The HybridBinarizer to use
-     * @return The decoded text
-     * @throws NotFoundException If no QR code is found
-     */
+
     private String decodeWithBinarizer(BufferedImage image, HybridBinarizer binarizer) throws NotFoundException {
         Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
         hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
@@ -250,14 +218,6 @@ public class QrCodeUtil {
         return result.getText();
     }
     
-    /**
-     * Decode QR code using GlobalHistogramBinarizer
-     * 
-     * @param image The source image
-     * @param binarizer The GlobalHistogramBinarizer to use
-     * @return The decoded text
-     * @throws NotFoundException If no QR code is found
-     */
     private String decodeWithGlobalHistogramBinarizer(BufferedImage image, GlobalHistogramBinarizer binarizer) throws NotFoundException {
         Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
         hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
@@ -268,12 +228,6 @@ public class QrCodeUtil {
         return result.getText();
     }
     
-    /**
-     * Enhance contrast of an image
-     * 
-     * @param original The original image
-     * @return The enhanced image
-     */
     private BufferedImage enhanceContrast(BufferedImage original) {
         BufferedImage enhanced = new BufferedImage(
                 original.getWidth(), 
@@ -304,12 +258,6 @@ public class QrCodeUtil {
         return enhanced;
     }
     
-    /**
-     * Convert an image to grayscale
-     * 
-     * @param original The original image
-     * @return The grayscale image
-     */
     private BufferedImage convertToGrayscale(BufferedImage original) {
         BufferedImage grayscale = new BufferedImage(
                 original.getWidth(), 
@@ -323,12 +271,6 @@ public class QrCodeUtil {
         return grayscale;
     }
     
-    /**
-     * Invert colors of an image
-     * 
-     * @param original The original image
-     * @return The inverted image
-     */
     private BufferedImage invertColors(BufferedImage original) {
         BufferedImage inverted = new BufferedImage(
                 original.getWidth(), 
@@ -349,13 +291,6 @@ public class QrCodeUtil {
         return inverted;
     }
     
-    /**
-     * Scale an image
-     * 
-     * @param original The original image
-     * @param scale The scale factor
-     * @return The scaled image
-     */
     private BufferedImage scaleImage(BufferedImage original, double scale) {
         int newWidth = (int) (original.getWidth() * scale);
         int newHeight = (int) (original.getHeight() * scale);
@@ -368,13 +303,6 @@ public class QrCodeUtil {
         return scaled;
     }
     
-    /**
-     * Rotate an image
-     * 
-     * @param original The original image
-     * @param degrees The rotation angle in degrees
-     * @return The rotated image
-     */
     private BufferedImage rotateImage(BufferedImage original, int degrees) {
         double radians = Math.toRadians(degrees);
         double sin = Math.abs(Math.sin(radians));

@@ -25,13 +25,7 @@ public class PdfController {
 
     @Autowired
     private QrCodeService qrCodeService;
-    
-    /**
-     * Endpoint for downloading a PDF with QR codes embedded
-     * 
-     * @param file The PDF file to process
-     * @return The modified PDF with QR codes embedded
-     */
+
     @PostMapping("/download")
     public ResponseEntity<?> downloadPdfWithQrCodes(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
@@ -60,12 +54,7 @@ public class PdfController {
         }
     }
     
-    /**
-     * Endpoint for uploading a PDF with QR codes and sorting pages
-     * 
-     * @param file The PDF file with QR codes to process
-     * @return Information about the processed pages
-     */
+
     @PostMapping("/upload")
     public ResponseEntity<?> uploadPdfWithQrCodes(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {

@@ -26,13 +26,6 @@ import javax.imageio.ImageIO;
 @Component
 public class PdfUtil {
 
-    /**
-     * Embeds QR codes into each page of a PDF document
-     * 
-     * @param pdfInputStream The input PDF document stream
-     * @param qrCodes Array of QR code images as byte arrays, one for each page
-     * @return The modified PDF document as a byte array
-     */
     public byte[] embedQrCodesIntoPdf(InputStream pdfInputStream, byte[][] qrCodes) {
         try (PDDocument document = PDDocument.load(pdfInputStream)) {
             int numberOfPages = document.getNumberOfPages();
@@ -90,13 +83,7 @@ public class PdfUtil {
             throw new FileStorageException("Failed to process PDF document", e);
         }
     }
-    
-    /**
-     * Extracts QR codes from each page of a PDF document
-     * 
-     * @param pdfBytes The PDF document as a byte array
-     * @return List of BufferedImage objects, one for each QR code found
-     */
+
     public List<BufferedImage> extractQrCodesFromPdf(byte[] pdfBytes) {
         try (PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfBytes))) {
             PDFRenderer renderer = new PDFRenderer(document);
@@ -137,13 +124,7 @@ public class PdfUtil {
         }
     }
     
-    /**
-     * Extracts a single page from a PDF document
-     * 
-     * @param pdfBytes The PDF document as a byte array
-     * @param pageIndex The zero-based index of the page to extract
-     * @param outputStream The output stream to write the extracted page to
-     */
+
     public void extractPageFromPdf(byte[] pdfBytes, int pageIndex, OutputStream outputStream) {
         try (PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfBytes))) {
             int numberOfPages = document.getNumberOfPages();
